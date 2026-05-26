@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lamecie - Pastelería</title>
+    <title>Lamecie - Pastry Shop</title>
     <style>
-        /* Paleta de colores */
+        /* Color Palette */
         :root {
             --beige-arena: #F5EBE6;
             --verde-pistacho: #B7D5AC;
@@ -115,7 +115,7 @@
             color: white;
         }
 
-        /* Carrito y Fidelización */
+        /* Cart & Loyalty Box */
         .sidebar {
             background: white;
             padding: 1.5rem;
@@ -137,62 +137,4 @@
             justify-content: space-between;
             margin-bottom: 0.5rem;
             padding-bottom: 0.5rem;
-            border-bottom: 1px solid var(--beige-arena);
-        }
-
-        .total-box {
-            font-size: 1.2rem;
-            font-weight: bold;
-            margin-top: 1rem;
-            text-align: right;
-        }
-    </style>
-</head>
-<body>
-
-    <header>
-        <h1>Lamecie</h1>
-        <p>Pastelería Artesanal & Cheesecakes de Ensueño</p>
-    </header>
-
-    <div class="promo-banner">
-        ¡Atención! Si es tu 6ta compra de Cheesecake, ¡ese Cheesecake te sale GRATIS! 🍰✨
-    </div>
-
-    <div class="container">
-        <main>
-            <h2>Nuestra Especialidad: Cheesecakes</h2>
-            <div class="grid-productos" id="cheesecakes-container"></div>
-
-            <h2>Otros Deleites</h2>
-            <div class="grid-productos" id="otros-container"></div>
-        </main>
-
-        <aside class="sidebar">
-            <div class="loyalty-box">
-                <h3>Club Lamecie 🌟</h3>
-                <label for="username">Tu Nombre:</label>
-                <input type="text" id="username" value="Invitado" style="width: 90%; padding: 0.3rem; margin: 0.5rem 0;">
-                <p id="loyalty-info">Cargando datos de cliente frecuente...</p>
-            </div>
-
-            <h3>Tu Pedido</h3>
-            <div id="cart-items">
-                <p style="color: gray;">El carrito está vacío.</p>
-            </div>
-            
-            <div class="total-box">
-                <div id="subtotal">Subtotal: $0.00</div>
-                <div id="descuento" style="color: green; font-size: 1rem;"></div>
-                <div id="total" style="color: var(--magenta); margin-top: 0.5rem;">Total: $0.00</div>
-            </div>
-
-            <button class="btn" style="width: 100%; margin-top: 1rem; background-color: var(--magenta); color: white;" onclick="checkout()">
-                Confirmar Compra
-            </button>
-        </aside>
-    </div>
-
-    <script src="script.js"></script>
-</body>
-</html>
+            border-bottom
