@@ -231,4 +231,48 @@
 <body>
 
     <header>
-        <h1>Lamecie Bakery
+        <h1>Lamecie Bakery</h1>
+        <p>Exquisite Cheesecakes & Fine Baking</p>
+    </header>
+
+    <div class="promo-banner">
+        Every 6th Cheesecake item in your loyalty history is completely complimentary. 🍰
+    </div>
+
+    <div class="container">
+        <main>
+            <h2>Our Signature Cheesecakes</h2>
+            <div class="grid-productos" id="cheesecakes-container"></div>
+
+            <h2>Other Sweet Delights</h2>
+            <div class="grid-productos" id="otros-container"></div>
+        </main>
+
+        <aside class="sidebar">
+            <div class="loyalty-box">
+                <h3>Lamecie Club Privilege</h3>
+                <label for="username">Customer Name / ID:</label>
+                <input type="text" id="username" value="GuestUser">
+                <p id="loyalty-info" style="font-size: 0.9rem; margin: 0;">Connecting to secure program...</p>
+            </div>
+
+            <h3 style="font-family: 'Playfair Display', serif; font-weight: 500;">Your Order Selection</h3>
+            <div id="cart-items">
+                <p style="color: #777; font-style: italic;">The selection is currently empty.</p>
+            </div>
+            
+            <div class="total-box">
+                <div id="subtotal">Subtotal: $0.00</div>
+                <div id="descuento" style="color: var(--rosa-fuerte); font-size: 0.95rem; margin: 0.5rem 0;"></div>
+                <div id="total">Total: $0.00</div>
+            </div>
+
+            <button class="btn" id="btn-checkout" style="width: 100%; margin-top: 1.5rem; background-color: var(--rosa-fuerte);">
+                Complete Order
+            </button>
+        </aside>
+    </div>
+
+    <script type="module" src="script.js"></script>
+</body>
+</html>
