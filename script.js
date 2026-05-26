@@ -1,31 +1,48 @@
-// Datos de los productos (Precios simulados, los puedes cambiar)
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+// Tu configuración oficial de Firebase integrada
+const firebaseConfig = {
+    apiKey: "AIzaSyAYFZz6yojkPAWWFU2gWxrbsFvlwbyanb0",
+    authDomain: "don-bosco-seating-booqluet.firebaseapp.com",
+    projectId: "don-bosco-seating-booqluet",
+    storageBucket: "don-bosco-seating-booqluet.firebasestorage.app",
+    messagingSenderId: "1005727362551",
+    appId: "1:1005727362551:web:205c7b9f419255267cd2f2"
+};
+
+// Inicializar Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// Menú Oficial en Inglés
 const cheesecakes = [
-    { id: 'ch_dulce', name: 'Cheesecake Dulce de Leche', price: 15, isCheesecake: true },
-    { id: 'ch_clasico', name: 'Cheesecake Clásico', price: 12, isCheesecake: true },
-    { id: 'ch_berries', name: 'Cheesecake Red Berries', price: 14, isCheesecake: true },
-    { id: 'ch_oreo', name: 'Cheesecake Oreo', price: 13, isCheesecake: true },
-    { id: 'ch_chocolate', name: 'Cheesecake Chocolate', price: 13, isCheesecake: true },
-    { id: 'ch_pistachio', name: 'Cheesecake Pistacho', price: 16, isCheesecake: true },
-    { id: 'ch_passion', name: 'Cheesecake Passion Fruit', price: 14, isCheesecake: true },
-    { id: 'ch_basco', name: 'Cheesecake Vasco', price: 15, isCheesecake: true }
+    { id: 'ch_dulce', name: 'Dulce de Elche Cheesecake', price: 16.00, isCheesecake: true },
+    { id: 'ch_clasico', name: 'Classic Cheesecake', price: 13.50, isCheesecake: true },
+    { id: 'ch_berries', name: 'Red Berries Cheesecake', price: 15.00, isCheesecake: true },
+    { id: 'ch_oreo', name: 'Oreo Cheesecake', price: 14.00, isCheesecake: true },
+    { id: 'ch_chocolate', name: 'Chocolate Cheesecake', price: 14.50, isCheesecake: true },
+    { id: 'ch_pistachio', name: 'Pistachio Cheesecake', price: 16.50, isCheesecake: true },
+    { id: 'ch_passion', name: 'Passion Fruit Cheesecake', price: 15.00, isCheesecake: true },
+    { id: 'ch_basco', name: 'Basque Cheesecake', price: 16.00, isCheesecake: true }
 ];
 
 const otrosProductos = [
-    { id: 'pie_manzana', name: 'Pie de Manzana', price: 10, isCheesecake: false },
-    { id: 'pie_limon', name: 'Pie de Limón', price: 10, isCheesecake: false },
-    { id: 'pie_frutos', name: 'Pie de Frutos Rojos', price: 12, isCheesecake: false },
-    { id: 'tiramisu', name: 'Tiramisú', price: 11, isCheesecake: false },
-    { id: 'torta_var', name: 'Torta del Día (Variedad)', price: 14, isCheesecake: false },
-    { id: 'bebida_var', name: 'Bebidas (Variedad)', price: 3, isCheesecake: false }
+    { id: 'pie_manzana', name: 'Classic Apple Pie', price: 11.00, isCheesecake: false },
+    { id: 'pie_limon', name: 'Lemon Pie', price: 10.50, isCheesecake: false },
+    { id: 'pie_frutos', name: 'Red Berries Pie', price: 12.00, isCheesecake: false },
+    { id: 'tiramisu', name: 'Traditional Tiramisu', price: 11.50, isCheesecake: false },
+    { id: 'torta_var', name: 'Fine Cakes Selection', price: 15.00, isCheesecake: false },
+    { id: 'bebida_var', name: 'Premium Beverages', price: 4.00, isCheesecake: false }
 ];
 
-// Estado de la aplicación
-let carrito = [];
-// Simulamos historial en LocalStorage para que no se borre al recargar la página
-let historialCompras = parseInt(localStorage.getItem('compras_totales')) || 0;
-let historialCheesecakes = parseInt(localStorage.getItem('cheesecakes_totales')) || 0;
+let cart = [];
+let currentCustomerData = {
+    totalPurchases: 0,
+    cheesecakesCount: 0
+};
 
-// Renderizar Menú en la pantalla
+// Desplegar menú de productos
 function renderMenu() {
     const chContainer = document.getElementById('cheesecakes-container');
     const otrosContainer = document.getElementById('otros-container');
@@ -33,50 +50,73 @@ function renderMenu() {
     cheesecakes.forEach(p => {
         chContainer.innerHTML += `
             <div class="card main-product">
-                <span class="badge">⭐ Favorito</span>
+                <span class="badge">Main Product</span>
                 <h3>${p.name}</h3>
-                <p>$${p.price.toFixed(2)}</p>
-                <button class="btn" onclick="agregarAlCarrito('${p.id}')">Agregar</button>
+                <div class="price">$${p.price.toFixed(2)}</div>
+                <button class="btn btn-add" data-id="${p.id}">Add Selection</button>
             </div>
         `;
     });
 
     otrosProductos.forEach(p => {
-        document.getElementById('otros-container').innerHTML += `
+        otrosContainer.innerHTML += `
             <div class="card">
                 <h3>${p.name}</h3>
-                <p>$${p.price.toFixed(2)}</p>
-                <button class="btn" onclick="agregarAlCarrito('${p.id}')">Agregar</button>
+                <div class="price">$${p.price.toFixed(2)}</div>
+                <button class="btn btn-add" data-id="${p.id}">Add Selection</button>
             </div>
         `;
     });
+
+    document.querySelectorAll('.btn-add').forEach(button => {
+        button.addEventListener('click', (e) => {
+            agregarAlCarrito(e.target.getAttribute('data-id'));
+        });
+    });
 }
 
-// Lógica del Carrito
+// Cargar Historial de Firebase Firestore de manera dinámica
+async function loadCustomerData() {
+    const username = document.getElementById('username').value.trim() || "GuestUser";
+    const docRef = doc(db, "customers", username);
+    
+    try {
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+            currentCustomerData = docSnap.data();
+        } else {
+            currentCustomerData = { totalPurchases: 0, cheesecakesCount: 0 };
+        }
+    } catch (error) {
+        console.error("Database connection issue: ", error);
+    }
+    actualizarInterfaz();
+}
+
 function agregarAlCarrito(id) {
     const producto = [...cheesecakes, ...otrosProductos].find(p => p.id === id);
-    const itemEnCarrito = carrito.find(item => item.id === id);
+    const itemEnCarrito = cart.find(item => item.id === id);
 
     if (itemEnCarrito) {
         itemEnCarrito.cantidad++;
     } else {
-        carrito.push({ ...producto, cantidad: 1 });
+        cart.push({ ...producto, cantidad: 1 });
     }
     actualizarInterfaz();
 }
 
 function actualizarInterfaz() {
-    // 1. Renderizar Club de Fidelidad
-    const esClienteFrecuente = historialCompras > 0;
+    // 1. Mostrar estado del Cliente Frecuente
+    const esClienteFrecuente = currentCustomerData.totalPurchases > 0;
     document.getElementById('loyalty-info').innerHTML = `
-        Compras anteriores: <b>${historialCompras}</b> ${esClienteFrecuente ? '(¡Tienes 10% desc!)' : ''}<br>
-        Cheesecakes acumulados: <b>${historialCheesecakes}/5</b>
+        Orders placed: <b>${currentCustomerData.totalPurchases}</b> ${esClienteFrecuente ? '(10% Frequent Client applied)' : ''}<br>
+        Cheesecakes toward gift: <b>${currentCustomerData.cheesecakesCount}/5</b>
     `;
 
-    // 2. Renderizar Carrito
+    // 2. Procesar el Carrito
     const cartContainer = document.getElementById('cart-items');
-    if (carrito.length === 0) {
-        cartContainer.innerHTML = '<p style="color: gray;">El carrito está vacío.</p>';
+    if (cart.length === 0) {
+        cartContainer.innerHTML = '<p style="color: #777; font-style: italic;">The selection is currently empty.</p>';
         document.getElementById('subtotal').innerText = 'Subtotal: $0.00';
         document.getElementById('descuento').innerText = '';
         document.getElementById('total').innerText = 'Total: $0.00';
@@ -85,95 +125,89 @@ function actualizarInterfaz() {
 
     cartContainer.innerHTML = '';
     let subtotal = 0;
-    let cheesecakesEnCarrito = 0;
-    let descuentoPorCheesecakeGratis = 0;
+    let discount6thCheesecake = 0;
+    let tempCheesecakeCount = currentCustomerData.cheesecakesCount;
+    let rewardedCheesecakes = 0;
 
-    // Contar cuántos cheesecakes se llevan en este intento
-    carrito.forEach(item => {
-        if (item.isCheesecake) {
-            cheesecakesEnCarrito += item.cantidad;
-        }
-    });
-
-    // Calcular si aplica el 6to gratis considerando el historial
-    let cuentaTemporalCheesecakes = historialCheesecakes;
-    let cheesecakesRegalados = 0;
-
-    carrito.forEach(item => {
-        let precioItemTotal = item.price * item.cantidad;
+    cart.forEach(item => {
+        let itemTotalPrice = item.price * item.cantidad;
         
-        // Lógica interna para aplicar el gratis al producto que corresponda
         if (item.isCheesecake) {
             for(let i = 0; i < item.cantidad; i++) {
-                cuentaTemporalCheesecakes++;
-                if (cuentaTemporalCheesecakes === 6) {
-                    descuentoPorCheesecakeGratis += item.price; // Descontamos el valor de este cheesecake
-                    cheesecakesRegalados++;
-                    cuentaTemporalCheesecakes = 0; // Se reinicia el contador de promos
+                tempCheesecakeCount++;
+                if (tempCheesecakeCount === 6) {
+                    discount6thCheesecake += item.price; 
+                    rewardedCheesecakes++;
+                    tempCheesecakeCount = 0; 
                 }
             }
         }
 
-        subtotal += precioItemTotal;
+        subtotal += itemTotalPrice;
 
         cartContainer.innerHTML += `
             <div class="cart-item">
                 <span>${item.name} (x${item.cantidad})</span>
-                <span>$${precioItemTotal.toFixed(2)}</span>
+                <span>$${itemTotalPrice.toFixed(2)}</span>
             </div>
         `;
     });
 
-    // Aplicar Descuento de Cliente Frecuente (10%) sobre el remanente
-    let baseParaDescuentoCliente = subtotal - descuentoPorCheesecakeGratis;
-    let descuentoCliente = esClienteFrecuente ? (baseParaDescuentoCliente * 0.10) : 0;
-    let totalFinal = subtotal - descuentoPorCheesecakeGratis - descuentoCliente;
+    let baseForFrequentDiscount = subtotal - discount6thCheesecake;
+    let customerDiscount = esClienteFrecuente ? (baseForFrequentDiscount * 0.10) : 0;
+    let finalTotal = subtotal - discount6thCheesecake - customerDiscount;
 
-    // Mostrar Totales
     document.getElementById('subtotal').innerText = `Subtotal: $${subtotal.toFixed(2)}`;
     
-    let textoDescuento = '';
-    if (cheesecakesRegalados > 0) textoDescuento += `¡6to Cheesecake Gratis! (-$${descuentoPorCheesecakeGratis.toFixed(2)})<br>`;
-    if (descuentoCliente > 0) textoDescuento += `Desc. Cliente Frecuente 10% (-$${descuentoCliente.toFixed(2)})`;
-    document.getElementById('descuento').innerHTML = textoDescuento;
+    let textDiscount = '';
+    if (rewardedCheesecakes > 0) textDiscount += `✨ 6th Cheesecake Reward (-$${discount6thCheesecake.toFixed(2)})<br>`;
+    if (customerDiscount > 0) textDiscount += `💎 Frequent Loyalty 10% Off (-$${customerDiscount.toFixed(2)})`;
+    document.getElementById('descuento').innerHTML = textDiscount;
 
-    document.getElementById('total').innerText = `Total: $${totalFinal.toFixed(2)}`;
+    document.getElementById('total').innerText = `Total: $${finalTotal.toFixed(2)}`;
 }
 
-// Simular Finalizar Compra
-function checkout() {
-    if (carrito.length === 0) {
-        alert('¡Tu carrito está vacío!');
+// Finalizar pedido guardando en la nube
+async function checkout() {
+    if (cart.length === 0) {
+        alert('Your order selection is empty.');
         return;
     }
 
-    // Contar cheesecakes de esta compra
-    let cheesecakesComprados = 0;
-    carrito.forEach(item => {
-        if (item.isCheesecake) cheesecakesComprados += item.cantidad;
+    let cheesecakesBoughtThisTime = 0;
+    cart.forEach(item => {
+        if (item.isCheesecake) cheesecakesBoughtThisTime += item.cantidad;
     });
 
-    // Actualizar historial
-    historialCompras += 1;
-    historialCheesecakes += cheesecakesComprados;
+    let newPurchases = currentCustomerData.totalPurchases + 1;
+    let newCheesecakesCount = currentCustomerData.cheesecakesCount + cheesecakesBoughtThisTime;
 
-    // Si pasa de 6, se calcula el sobrante para la siguiente vuelta
-    while (historialCheesecakes >= 6) {
-        historialCheesecakes -= 6; 
+    while (newCheesecakesCount >= 6) {
+        newCheesecakesCount -= 6;
     }
 
-    // Guardar en la "base de datos" del navegador
-    localStorage.setItem('compras_totales', historialCompras);
-    localStorage.setItem('cheesecakes_totales', historialCheesecakes);
+    const username = document.getElementById('username').value.trim() || "GuestUser";
+    const docRef = doc(db, "customers", username);
 
-    const nombre = document.getElementById('username').value;
-    alert(`¡Gracias por tu compra, ${nombre}! Tu pedido en Lamecie ha sido procesado con éxito.`);
-    
-    // Limpiar carrito
-    carrito = [];
-    actualizarInterfaz();
+    try {
+        await setDoc(docRef, {
+            totalPurchases: newPurchases,
+            cheesecakesCount: newCheesecakesCount
+        });
+
+        alert(`Thank you for your order, ${username}. Your experience at Lamecie Bakery has been successfully registered.`);
+        
+        cart = [];
+        await loadCustomerData();
+    } catch (e) {
+        console.error("Firebase write error: ", e);
+        alert("Could not synchronize with the server. Please verify your internet connection.");
+    }
 }
 
-// Iniciar app
+// Event Listeners de inicialización
+document.getElementById('username').addEventListener('change', loadCustomerData);
+document.getElementById('btn-checkout').addEventListener('click', checkout);
+
 renderMenu();
-actualizarInterfaz();
+loadCustomerData();
